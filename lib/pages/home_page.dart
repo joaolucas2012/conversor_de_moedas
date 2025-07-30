@@ -1,12 +1,11 @@
+import 'package:conversor_de_moedas/controllers/currency_controller.dart';
+import 'package:conversor_de_moedas/shared/constants/app_colors.dart';
+import 'package:conversor_de_moedas/widgets/clear_button.dart';
+import 'package:conversor_de_moedas/widgets/currency_text_field.dart';
+import 'package:conversor_de_moedas/widgets/error_widget.dart';
+import 'package:conversor_de_moedas/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../controllers/currency_controller.dart';
-import '../shared/constants/app_colors.dart';
-import '../widgets/clear_button.dart';
-import '../widgets/currency_text_field.dart';
-import '../widgets/error_widget.dart';
-import '../widgets/loading_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

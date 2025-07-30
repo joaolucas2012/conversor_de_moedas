@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-
-import '../models/exchange_rates_model.dart';
-import '../shared/config/env_config.dart';
+import 'package:conversor_de_moedas/models/exchange_rates_model.dart';
+import 'package:conversor_de_moedas/shared/config/env_config.dart';
+import 'package:http/http.dart';
 
 abstract class ICurrencyService {
   Future<ExchangeRatesModel> getExchangeRates();
@@ -14,9 +13,9 @@ class CurrencyService implements ICurrencyService {
   @override
   Future<ExchangeRatesModel> getExchangeRates() async {
     try {
-      final apiKey = EnvConfig.apiKey;
-      final uri = Uri.parse('$_baseUrl?key=$apiKey');
-      final response = await http.get(uri);
+      String apiKey = EnvConfig.apiKey;
+      Uri uri = Uri.parse('$_baseUrl?key=$apiKey');
+      Response response = await get(uri);
 
       if (response.statusCode == 200) {
         final jsonData = Map<String, dynamic>.from(

@@ -1,12 +1,13 @@
+import 'package:conversor_de_moedas/models/exchange_rates_model.dart';
+import 'package:conversor_de_moedas/services/connectivity_service.dart';
+import 'package:conversor_de_moedas/services/currency_converter_service.dart';
+import 'package:conversor_de_moedas/services/currency_service.dart';
 import 'package:flutter/material.dart';
-
-import '../models/exchange_rates_model.dart';
-import '../services/currency_service.dart';
-import '../services/currency_converter_service.dart';
 
 class CurrencyController extends ChangeNotifier {
   final ICurrencyService _currencyService;
   final ICurrencyConverterService _converterService;
+  final IConnectivityService _connectivityService;
 
   ExchangeRatesModel? _exchangeRates;
   bool _isLoading = false;
@@ -20,8 +21,10 @@ class CurrencyController extends ChangeNotifier {
   CurrencyController({
     ICurrencyService? currencyService,
     ICurrencyConverterService? converterService,
+    IConnectivityService? connectivityService,
   }) : _currencyService = currencyService ?? CurrencyService(),
-       _converterService = converterService ?? CurrencyConverterService();
+       _converterService = converterService ?? CurrencyConverterService(),
+       _connectivityService = connectivityService ?? ConnectivityService();
 
   ExchangeRatesModel? get exchangeRates => _exchangeRates;
   bool get isLoading => _isLoading;
@@ -32,6 +35,20 @@ class CurrencyController extends ChangeNotifier {
     _clearError();
 
     try {
+      // Verificar conectividade primeiro
+      bool isConnected = await _connectivityService.isConnected();
+      if (!isConnected) {
+        _setError('Sem conexão com a internet. Verifique sua rede.');
+        return;
+      }
+
+      // Verificar se consegue acessar a API
+      bool canReachApi = await _connectivityService.canReachApi();
+      if (!canReachApi) {
+        _setError('Não foi possível conectar ao servidor. Tente novamente.');
+        return;
+      }
+
       _exchangeRates = await _currencyService.getExchangeRates();
       notifyListeners();
     } catch (e) {
@@ -46,10 +63,10 @@ class CurrencyController extends ChangeNotifier {
 
     if (value.isEmpty) return _clearAll();
 
-    final amount = double.tryParse(value) ?? 0.0;
+    double amount = double.tryParse(value) ?? 0.0;
     if (amount <= 0) return;
 
-    final conversions = _converterService.convertFromBase(
+    Map<String, double> conversions = _converterService.convertFromBase(
       amount,
       'BRL',
       _exchangeRates!,
@@ -66,10 +83,10 @@ class CurrencyController extends ChangeNotifier {
 
     if (value.isEmpty) return _clearAll();
 
-    final amount = double.tryParse(value) ?? 0.0;
+    double amount = double.tryParse(value) ?? 0.0;
     if (amount <= 0) return;
 
-    final conversions = _converterService.convertFromBase(
+    Map<String, double> conversions = _converterService.convertFromBase(
       amount,
       'USD',
       _exchangeRates!,
@@ -89,7 +106,7 @@ class CurrencyController extends ChangeNotifier {
     final amount = double.tryParse(value) ?? 0.0;
     if (amount <= 0) return;
 
-    final conversions = _converterService.convertFromBase(
+    Map<String, double> conversions = _converterService.convertFromBase(
       amount,
       'EUR',
       _exchangeRates!,

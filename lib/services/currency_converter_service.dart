@@ -1,4 +1,4 @@
-import '../models/exchange_rates_model.dart';
+import 'package:conversor_de_moedas/models/exchange_rates_model.dart';
 
 abstract class ICurrencyConverterService {
   double convertCurrency(
@@ -24,13 +24,13 @@ class CurrencyConverterService implements ICurrencyConverterService {
   ) {
     if (amount <= 0) return 0.0;
 
-    final fromRate = rates.getBuyRate(fromCurrency);
-    final toRate = rates.getBuyRate(toCurrency);
+    double? fromRate = rates.getBuyRate(fromCurrency);
+    double? toRate = rates.getBuyRate(toCurrency);
 
     if (fromRate == null || toRate == null) return 0.0;
 
     // Converter para BRL primeiro (moeda base), depois para a moeda destino
-    final amountInBRL = amount * fromRate;
+    double amountInBRL = amount * fromRate;
     return amountInBRL / toRate;
   }
 
@@ -42,7 +42,7 @@ class CurrencyConverterService implements ICurrencyConverterService {
   ) {
     final conversions = <String, double>{};
 
-    for (final currencyCode in rates.currencies.keys) {
+    for (String currencyCode in rates.currencies.keys) {
       if (currencyCode != baseCurrency) {
         conversions[currencyCode] = convertCurrency(
           amount,

@@ -4,7 +4,7 @@ class EnvConfig {
   static const String _apiKeyKey = 'API_KEY';
 
   static String get apiKey {
-    final apiKey = dotenv.env[_apiKeyKey];
+    String? apiKey = dotenv.env[_apiKeyKey];
     if (apiKey == null || apiKey.isEmpty) {
       throw Exception('API_KEY não encontrada no arquivo .env');
     }
